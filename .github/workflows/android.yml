@@ -1,38 +1,47 @@
 
-name: Build Android APK
+plugins {
+    id 'com.android.application'
+    id 'org.jetbrains.kotlin.android'
+}
 
-on:
-  workflow_dispatch:
-  push:
-    branches:
-      - main
+android {
+    namespace 'com.example.scanconnect'
+    compileSdk 35
 
-jobs:
-  build:
-    runs-on: ubuntu-latest
+    defaultConfig {
+        applicationId 'com.example.scanconnect'
+        minSdk 24
+        targetSdk 35
+        versionCode 1
+        versionName '1.0'
+    }
 
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v4
+    compileOptions {
+        sourceCompatibility JavaVersion.VERSION_17
+        targetCompatibility JavaVersion.VERSION_17
+    }
 
-      - name: Extract Android project
-        run: |
-          unzip -o ScanConnect-Android-Fixed.zip -d .
+    kotlinOptions {
+        jvmTarget = '17'
+    }
 
-      - name: Set up Java
-        uses: actions/setup-java@v4
-        with:
-          distribution: temurin
-          java-version: '17'
+    buildTypes {
+        debug {
+            minifyEnabled false
+        }
 
-      - name: Set up Gradle
-        uses: gradle/actions/setup-gradle@v4
+        release {
+            minifyEnabled false
+        }
+    }
+}
 
-      - name: Build APK
-        run: gradle assembleDebug
+dependencies {
+    implementation 'androidx.core:core-ktx:1.15.0'
 
-      - name: Upload APK
-        uses: actions/upload-artifact@v4
-        with:
-          name: ScanConnect-debug-apk
-          path: app/build/outputs/apk/debug/*.apk
+    implementation 'androidx.appcompat:appcompat:1.7.0'
+
+    implementation 'com.google.android.material:material:1.12.0'
+
+    implementation 'com.google.android.gms:play-services-mlkit-document-scanner:16.0.0'
+}
